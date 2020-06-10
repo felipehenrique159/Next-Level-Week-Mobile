@@ -38,7 +38,7 @@ const Points = () => {
     function handleNavigateBack() {
         navigation.navigate('Home')
     }
-    function handleNavigateToDetail(id: number) {
+    function handleNavigateToDetail(id: number) {   //envia o id do point para a proxima tela
         navigation.navigate('Detail',{ point_id: id })
     }
 
