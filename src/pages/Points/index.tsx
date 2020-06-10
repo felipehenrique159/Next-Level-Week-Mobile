@@ -13,6 +13,17 @@ interface Item{
     title:string,
     image_url:string
 }
+interface Point{
+
+    id:number,
+    name:string,
+    image:string,
+    latitude:number,
+    longitude:number,
+    items: {
+        title: string
+    }
+}
 
 const Points = () => {
 
@@ -20,14 +31,15 @@ const Points = () => {
 
     const navigation = useNavigation();
     const [items , setItems] = useState<Item[]>([])
+    const [points , setPoints] = useState<Point[]>([])
     const [selectedItems, setSelectedItems] = useState<number[]>([])
     const [initialPosition, setInitialPosition] = useState<[number,number]>([0,0])
 
     function handleNavigateBack() {
         navigation.navigate('Home')
     }
-    function handleNavigateToDetail() {
-        navigation.navigate('Detail')
+    function handleNavigateToDetail(id: number) {
+        navigation.navigate('Detail',{ point_id: id })
     }
 
     function handleSelectItem(id: number){
@@ -52,14 +64,23 @@ const Points = () => {
     }, [])
     
     useEffect(() => {
-        api.get('poins').then(res =>{
-           
+        
+
+        api.get('points',{ 
+            
             params:{
-                
-            }
+            
+        
+            city: 'Vespasiano',
+            uf: 'MG',
+            items: [1,2,3,4,5,6]
            
+
+        } }).then(res =>{
+            setPoints(res.data)
         })
     }, [])
+    
     
     useEffect(() => {
     async function loadPosition(){
@@ -104,19 +125,22 @@ const Points = () => {
                        
                         >
     
-                            <Marker style={styles.mapMarker}
-                            onPress={handleNavigateToDetail}
-                                coordinate={{
-                                    latitude: -19.693278,
-                                    longitude: -43.9278163
-                                }}
-                            >
-                                <View style={styles.mapMarkerContainer}>
-                                    <Image style={styles.mapMarkerImage}
-                                        source={{ uri: 'https://images.unsplash.com/photo-1556767576-5ec41e3239ea?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&q=60' }} />
-                                <Text style={styles.mapMarkerTitle}>Mercado</Text>
-                                </View>
-                            </Marker>
+                          {points.map(point => (
+                               <Marker key={point.id} style={styles.mapMarker}
+                               onPress={() => handleNavigateToDetail(point.id)}
+                                   coordinate={{
+                                       latitude: point.latitude,
+                                       longitude: point.longitude
+                                       
+                                   }}
+                               >
+                                   <View style={styles.mapMarkerContainer}>
+                                       <Image style={styles.mapMarkerImage}
+                                           source={{ uri: 'https://images.unsplash.com/photo-1556767576-5ec41e3239ea?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&q=60' }} />
+                                   <Text style={styles.mapMarkerTitle}>{point.name}</Text>
+                                   </View>
+                               </Marker>
+                          ))} 
                         </MapView>
                    ) }
                 </View>
