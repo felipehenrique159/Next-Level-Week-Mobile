@@ -2,7 +2,7 @@ import React , {useState,useEffect}  from 'react'
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Image, Alert } from 'react-native'
 import { Feather as Icon } from '@expo/vector-icons'
 import Constants from 'expo-constants'
-import { useNavigation } from '@react-navigation/native'
+import { useNavigation, useRoute } from '@react-navigation/native'
 import MapView, { Marker } from 'react-native-maps'
 import { SvgUri } from 'react-native-svg'
 import api from '../../services/api';
@@ -25,11 +25,17 @@ interface Point{
     }
 }
 
+interface Params{
+    uf:string,
+    city:string
+}
+
 const Points = () => {
 
     
-
+   const route = useRoute()
     const navigation = useNavigation();
+    const routeParams = route.params as Params  //define o formato da variavel
     const [items , setItems] = useState<Item[]>([])
     const [points , setPoints] = useState<Point[]>([])
     const [selectedItems, setSelectedItems] = useState<number[]>([])
@@ -70,16 +76,15 @@ const Points = () => {
             
             params:{
             
-        
-            city: 'Vespasiano',
-            uf: 'MG',
-            items: [1,2,3,4,5,6]
+            city: routeParams.city,
+            uf: routeParams.uf,
+            items: selectedItems
            
 
         } }).then(res =>{
             setPoints(res.data)
         })
-    }, [])
+    }, [selectedItems])  //cada vez que clicar num item
     
     
     useEffect(() => {
